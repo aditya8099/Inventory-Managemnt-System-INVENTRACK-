@@ -1,0 +1,63 @@
+ <?php
+include_once("side_header.php");
+include('js.php');
+include('dbcon.php');
+
+ if (isset($_POST['product_code']) && $_POST['product_code'] != "") {
+    $code = $_POST['product_code'];
+    $id = $_POST['product_id'];
+    $result = mysqli_query($con, "SELECT * FROM `tblproduct` WHERE `product_code`='$code'");
+    $row = mysqli_fetch_assoc($result);
+    $Id = $row['product_id'];
+    $name = $row['product_name'];
+    $code = $row['product_code'];
+    $Supplier = $row['product_supplier'];
+    $weight = $row['product_weight'];
+    $color = $row['product_color'];
+    $price = $row['product_price'];
+    $image = $row['product_image'];
+    $Size = $row['product_size'];
+    $prdQuantity = $row['product_quantity'];
+
+    $cartArray = array(
+        $code => array(
+            'product_id' => $Id,
+            'product_name' => $name,
+            'product_code' => $code,
+            'product_supplier' => $Supplier,
+            'product_weight' => $weight,
+            'product_color' => $color,
+            'product_price' => $price,
+            'product_image' => $image,
+            'product_size' => $Size,
+            'product_quantity' => $prdQuantity
+        )
+    );
+
+    if (empty($_SESSION["Shoping_Product"])) {
+        $_SESSION["Shoping_Product"] = $cartArray;
+        echo '
+                <script>
+                    alert("Item Added in Cart");
+                    window.location.href= "http://localhost/inv/buyproduct.php";
+                </script>';
+    } else {
+        $array_keys = array_keys($_SESSION["Shoping_Product"]);
+        if (in_array($code, $array_keys)) {
+            echo '
+                <script>
+                    alert("Item Already Added in Cart");
+                    window.location.href= "http://localhost/inv/buyproduct.php";
+                </script>';
+        } else {
+            $_SESSION["Shoping_Product"] = array_merge($_SESSION["Shoping_Product"], $cartArray);
+
+            echo '
+                <script>
+                    alert("Item Added in Cart");
+                    window.location.href= "http://localhost/inv/buyproduct.php";
+                </script>';
+        }
+    }
+}
+?>
